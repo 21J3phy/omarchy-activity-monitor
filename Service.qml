@@ -107,6 +107,9 @@ Item {
   // Cumulative jiffies from the previous tick. CPU usage is the ratio between
   // two samples, so there is nothing to show until the second one lands.
   property var _prevJiffies: null
+  property real _asahiPrevBusy: -1
+  property real _asahiPrevTime: 0
+  property string _asahiPrevPath: ""
 
   function setting(name, fallback) {
     var value = settings ? settings[name] : undefined
@@ -234,6 +237,16 @@ Item {
       gpuBusyFile.reload()
       gpuPercent = readNumber(gpuBusyFile, 0)
     }
+    if (asahiStatsFile.path !== "") {
+      asahiStatsFile.reload()
+      var now = Date.now()
+      var busy = Model.asahiBusyNs(asahiStatsFile.text())
+      if (_asahiPrevPath !== asahiStatsFile.path) _asahiPrevBusy = -1
+      gpuPercent = Model.asahiBusyPercent(_asahiPrevBusy, busy, now - _asahiPrevTime)
+      _asahiPrevBusy = busy
+      _asahiPrevTime = now
+      _asahiPrevPath = asahiStatsFile.path
+    }
     if (gpuTempFile.path !== "") {
       gpuTempFile.reload()
       gpuTempC = readTemp(gpuTempFile)
@@ -325,6 +338,12 @@ Item {
   FileView {
     id: gpuBusyFile
     path: root.hasGpu && root.gpuInfo.busyPath ? String(root.gpuInfo.busyPath) : ""
+    blockAllReads: true
+    printErrors: false
+  }
+  FileView {
+    id: asahiStatsFile
+    path: root.hasGpu && root.gpuInfo.asahiStatsPath ? String(root.gpuInfo.asahiStatsPath) : ""
     blockAllReads: true
     printErrors: false
   }

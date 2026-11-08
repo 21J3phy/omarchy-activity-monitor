@@ -352,3 +352,14 @@ function padLeft(text, width) {
   while (out.length < width) out = " " + out
   return out
 }
+
+// Asahi reports cumulative GPU active nanoseconds, not a percentage.
+function asahiBusyNs(raw) {
+  var match = String(raw || "").match(/(?:^|\n)busy_ns\s+(\d+)(?:\s|$)/)
+  return match ? Number(match[1]) : -1
+}
+
+function asahiBusyPercent(previous, current, elapsedMs) {
+  if (previous < 0 || current < previous || elapsedMs <= 0) return -1
+  return clamp((current - previous) / (elapsedMs * 1000000) * 100, 0, 100)
+}

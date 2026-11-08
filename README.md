@@ -1,5 +1,7 @@
 # Activity Monitor
 
+This fork adds Apple Silicon GPU utilization support for the Asahi driver when `agx_stats` exposes `busy_ns`. The original project is [modib/omarchy-activity-monitor](https://github.com/modib/omarchy-activity-monitor).
+
 A system activity monitor for the Omarchy bar. CPU, memory, GPU, temperature, and
 fan are read straight from `/proc` and `/sys` and rendered as sleek icon
 readouts; one click opens a keyboard-driven panel with live history graphs and
@@ -54,7 +56,7 @@ an explicit consent prompt.
 ## Install
 
 ```sh
-omarchy plugin add https://github.com/modib/omarchy-activity-monitor.git --enable
+omarchy plugin add https://github.com/21J3phy/omarchy-activity-monitor.git --enable
 ```
 
 Place it wherever you like and restart the shell:
@@ -150,6 +152,7 @@ readable by your user.
 | CPU temperature | `hwmon` | die/package sensor, picked by scoring (`k10temp` `Tdie`/`Tctl`, `coretemp` `Package id 0`, `zenpower`, ThinkPad, ARM SoC, then `acpitz`) |
 | System fan | `hwmon` or EC platform device (`fan*_input`), or `fanOverridePath` if set | RPM, whenever a reading exists |
 | GPU | its own `sysfs` counter | load, edge temperature, VRAM, board power, fan, core clock |
+| GPU (Apple Silicon / Asahi) | `agx_stats` busy-time counter | utilization sampled from the change in busy time |
 | GPU (NVIDIA) | `nvidia-smi` | the same telemetry, polled on the same interval |
 | Load average | `/proc/loadavg` | 1/5/15 minute |
 | Processes | [`proc-probe`](proc-probe) survey | Heaviest CPU and Heaviest Memory |
