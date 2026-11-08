@@ -241,11 +241,11 @@ Item {
       asahiStatsFile.reload()
       var now = Date.now()
       var busy = Model.asahiBusyNs(asahiStatsFile.text())
-      if (_asahiPrevPath !== asahiStatsFile.path) _asahiPrevBusy = -1
+      if (_asahiPrevPath !== String(asahiStatsFile.path)) _asahiPrevBusy = -1
       gpuPercent = Model.asahiBusyPercent(_asahiPrevBusy, busy, now - _asahiPrevTime)
       _asahiPrevBusy = busy
       _asahiPrevTime = now
-      _asahiPrevPath = asahiStatsFile.path
+      _asahiPrevPath = String(asahiStatsFile.path)
     }
     if (gpuTempFile.path !== "") {
       gpuTempFile.reload()
